@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import com.analog.adis16470.frc.ADIS16470_IMU;
+//import com.analog.adis16470.frc.ADIS16470_IMU;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -39,7 +39,7 @@ public class DriveTrain extends SubsystemBase {
 
   //private final DifferentialDrive myRobot;
 
-  private final ADIS16470_IMU gyro;
+  //private final ADIS16470_IMU gyro;
 
   //DiffDriveKinematics must be in SI units, inches to meters, track width!
   public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
@@ -59,7 +59,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    gyro = new ADIS16470_IMU();
+    //gyro = new ADIS16470_IMU();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
