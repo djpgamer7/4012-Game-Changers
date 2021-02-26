@@ -79,11 +79,11 @@ public class Limelight extends SubsystemBase {
     return targetArea;
   }
 
-  public void setLed(LedModes mode){
+  public synchronized void setLed(LedModes mode){
     ledState.setNumber(mode.ordinal());
   }
 
-  public void setCam(CamModes mode){
+  public synchronized void setCam(CamModes mode){
     camState.setNumber(mode.ordinal());
   }
 }

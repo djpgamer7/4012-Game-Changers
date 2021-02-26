@@ -25,7 +25,7 @@ public class GameData extends SubsystemBase {
     getGameData();
   }
 
-  public void getGameData(){
+  public synchronized void getGameData(){
     char data = 'n';
     String toDashboard = Character.toString(data);
 

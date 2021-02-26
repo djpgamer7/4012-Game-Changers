@@ -82,7 +82,7 @@ public class WheelOfPain extends SubsystemBase {
     String neededColor = SmartDashboard.getString("Control Color", "u");
 
 
-    //Im not insane, 90 degree offset based off of where their color sensor is compared to ours
+    //Im promise I am not insane, 90 degree offset based off of where their color sensor is compared to ours
     if(neededColor == "B"){
       desiredColor = "Red";
     } else if(neededColor == "R"){

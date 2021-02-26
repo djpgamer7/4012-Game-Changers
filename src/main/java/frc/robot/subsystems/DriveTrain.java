@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import com.analog.adis16470.frc.ADIS16470_IMU;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -39,7 +40,7 @@ public class DriveTrain extends SubsystemBase {
 
   //private final DifferentialDrive myRobot;
 
-  //private final ADIS16470_IMU gyro;
+  private final ADIS16470_IMU gyro;
 
   //DiffDriveKinematics must be in SI units, inches to meters, track width!
   public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
@@ -59,7 +60,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    //gyro = new ADIS16470_IMU();
+    gyro = new ADIS16470_IMU();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
@@ -135,6 +136,7 @@ public class DriveTrain extends SubsystemBase {
   */
 
   //Allows manual control of the robot
+
   /**
   *@param leftVal takes the value of the Y axis on the left joystick
   *@param rightVal takes the value of the Y axis on the left Joystick
