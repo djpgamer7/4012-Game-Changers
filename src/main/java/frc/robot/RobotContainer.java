@@ -56,18 +56,18 @@ import frc.robot.controllers.DanController;
 
 @SuppressWarnings("unused")
 public class RobotContainer {
-  private DriveTrain drive = new DriveTrain();
-  private Limelight vision = new Limelight();
-  private Intake intake = new Intake();
-  private Pneumatics pneumatics = new Pneumatics();
-  private WheelOfPain wheel = new WheelOfPain();
-  private Shooter shooter = new Shooter();
-  private Hopper hopper = new Hopper();
+  private final DriveTrain drive = new DriveTrain();
+  private final Limelight vision = new Limelight();
+  private final Intake intake = new Intake();
+  private final Pneumatics pneumatics = new Pneumatics();
+  private final WheelOfPain wheel = new WheelOfPain();
+  private final Shooter shooter = new Shooter();
+  private final Hopper hopper = new Hopper();
 
-  private SendableChooser<Command> chooser = new SendableChooser<>();
+  private final SendableChooser<Command> chooser = new SendableChooser<>();
 
-  private Joystick stickL = new Joystick(Constants.LEFT_JOY);
-  private Joystick stickR = new Joystick(Constants.RIGHT_JOY);
+  private final Joystick stickL = new Joystick(Constants.LEFT_JOY);
+  private final Joystick stickR = new Joystick(Constants.RIGHT_JOY);
   //private DanController xboxCont = new DanController(Constants.MANIP_CONTROLLER);
 
   public RobotContainer() {
@@ -95,8 +95,8 @@ public class RobotContainer {
   }
 
   public void configDefaultCommands(){
-    drive.setDefaultCommand(new TankDrive(drive, 
-    () -> stickL.getY(), 
+    drive.setDefaultCommand(new TankDrive(drive,
+    () -> stickL.getY(),
     () -> stickR.getY()));
 
     vision.setDefaultCommand(new SetVision(vision));

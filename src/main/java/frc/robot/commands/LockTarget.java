@@ -53,6 +53,8 @@ public class LockTarget extends CommandBase {
     System.out.println("Rot: " + steeringAdjust);
 
     drive.arcadeDrive(-steeringAdjust, -distanceAdjust);
+    System.out.println(steeringAdjust);
+    System.out.println(distanceAdjust);
   }
 
   @Override

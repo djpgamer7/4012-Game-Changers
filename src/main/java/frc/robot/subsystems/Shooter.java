@@ -27,6 +27,7 @@ public class Shooter extends SubsystemBase {
   private double targetVelocityPer100ms = Constants.shooterSetPoint * 500.0 * 4096 / 600;
 
   public Shooter() {
+
     m_shooter = new TalonFX(Constants.SHOOTER_MOTOR);
 
     m_shooter.configFactoryDefault();
