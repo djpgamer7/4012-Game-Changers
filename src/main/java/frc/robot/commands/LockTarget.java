@@ -56,6 +56,8 @@ public class LockTarget extends CommandBase {
     steeringAdjust = Double.parseDouble(dF.format(dF.format(steeringAdjust)));
 
     drive.arcadeDrive(-steeringAdjust, -distanceAdjust);
+    System.out.println(steeringAdjust);
+    System.out.println(distanceAdjust);
   }
 
   @Override

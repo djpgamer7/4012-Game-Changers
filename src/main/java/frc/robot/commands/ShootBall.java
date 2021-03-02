@@ -12,14 +12,14 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
 
 public class ShootBall extends CommandBase {
-  private Shooter shooter;
+  //private Shooter shooter;
   private Hopper hopper;
 
   public ShootBall(Shooter subsystem1, Hopper subsystem2) {
-    shooter = subsystem1;
+    //shooter = subsystem1;
     hopper = subsystem2;
     
-    addRequirements(shooter, hopper);
+    addRequirements(hopper);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -31,8 +31,8 @@ public class ShootBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.activateClosedLoopControl();
-    hopper.carryBall();
+    //shooter.activateClosedLoopControl();
+    hopper.shootBall();
   }
 
   // Called once the command ends or is interrupted.
