@@ -67,16 +67,16 @@ public class WheelOfPain extends SubsystemBase {
 
     ColorMatchResult currentColor = colorMatch.matchClosestColor(detectedColor);
 
-    if(currentColor.color == kBlue){
+    if(currentColor.color == kBlue) {
       colorStr = "Blue";
-    } else if(currentColor.color == kRed){
+    } else if(currentColor.color == kRed) {
       colorStr = "Red";
-    } else if(currentColor.color == kYellow){
+    } else if(currentColor.color == kYellow) {
       colorStr = "Yellow";
-    } else if(currentColor.color == kGreen){
+    } else if(currentColor.color == kGreen) {
       colorStr = "Green";
     } else {
-      colorStr = "IDK Bro";
+      colorStr = "IDK Bro, brain small";
     }
 
     String neededColor = SmartDashboard.getString("Control Color", "u");
