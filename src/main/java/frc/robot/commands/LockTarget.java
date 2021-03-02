@@ -15,9 +15,12 @@ import frc.robot.subsystems.Limelight.CamModes;
 import frc.robot.subsystems.Limelight.LedModes;
 import frc.robot.subsystems.Limelight.LimelightConstants;
 
+import java.text.DecimalFormat;
+
 public class LockTarget extends CommandBase {
   public DriveTrain drive;
   public Limelight limelight;
+  public DecimalFormat dF = new DecimalFormat("0.000");
 
   private double kProt = LimelightConstants.kProt;
   private double kPdist = LimelightConstants.kPdist;
@@ -48,9 +51,9 @@ public class LockTarget extends CommandBase {
     if(distanceAdjust > .5){
       distanceAdjust = .5;
     }
-    
-    System.out.println("Dist: " + distanceAdjust);
-    System.out.println("Rot: " + steeringAdjust);
+
+    distanceAdjust = Double.parseDouble(dF.format(distanceAdjust));
+    steeringAdjust = Double.parseDouble(dF.format(dF.format(steeringAdjust)));
 
     drive.arcadeDrive(-steeringAdjust, -distanceAdjust);
   }
