@@ -9,6 +9,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -22,12 +26,23 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  * @version 3/2/2020
  */
 public class Shooter extends SubsystemBase {
+
+  public static CANSparkMax shooterMotor;
+  public static CANEncoder shooterEnc;
+  /*
   private final TalonFX m_shooter;
 
   private double targetVelocityPer100ms = Constants.shooterSetPoint * 500.0 * 4096 / 600;
 
+   */
   public Shooter() {
+    shooterMotor = new CANSparkMax(Constants.SHOOTER_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+    shooterMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+    shooterEnc = shooterMotor.getEncoder();
+
+    /*
     m_shooter = new TalonFX(Constants.SHOOTER_MOTOR);
 
     m_shooter.configFactoryDefault();
@@ -49,12 +64,53 @@ public class Shooter extends SubsystemBase {
     m_shooter.configNominalOutputReverse(0, Constants.shooterTimeout);
     m_shooter.configPeakOutputForward(0.8, Constants.shooterTimeout);
     m_shooter.configPeakOutputReverse(-0.8, Constants.shooterTimeout);
+
+     */
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+  public double getRpm() {
+    return shooterEnc.getCountsPerRevolution();
+  }
+
+  public synchronized void setVelocity(double velocity) {
+    double shooterVal = 0;
+    boolean atSetPoint = false;
+    if(shooterEnc.getVelocity() < velocity) {
+      double diff = velocity - shooterEnc.getVelocity();
+
+      if(diff > .7) {
+        diff = .7;
+      }
+
+      shooterVal = diff * Constants.shooterkP;
+    } else if(shooterEnc.getVelocity() > velocity) {
+      double diff = velocity + shooterEnc.getVelocity();
+
+      if(diff > .7) {
+        diff = .7;
+      }
+
+      shooterVal = diff * Constants.shooterkP;
+    }
+
+    if(velocity == shooterEnc.getVelocity()) {
+      atSetPoint = true;
+    } else {
+      atSetPoint = false;
+    }
+
+    shooterMotor.set(shooterVal);
+  }
+
+  public synchronized void setSpeed(double speed) {
+    shooterMotor.set(speed);
+  }
+  /*
 
   public double getRpm(){
     return m_shooter.getSensorCollection().getIntegratedSensorVelocity();
@@ -79,4 +135,5 @@ public class Shooter extends SubsystemBase {
     }
     return false;
   }
+   */
 }
