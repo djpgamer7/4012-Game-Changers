@@ -22,7 +22,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  * @version 3/2/2020
  */
 public class Shooter extends SubsystemBase {
-  private final TalonFX m_shooter;
+  /*private final TalonFX m_shooter;
 
   private double targetVelocityPer100ms = Constants.shooterSetPoint * 500.0 * 4096 / 600;
 
@@ -78,5 +78,5 @@ public class Shooter extends SubsystemBase {
       return true;
     }
     return false;
-  }
+  }*/
 }

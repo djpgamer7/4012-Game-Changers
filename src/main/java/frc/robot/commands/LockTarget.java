@@ -44,17 +44,32 @@ public class LockTarget extends CommandBase {
       steeringAdjust -= LimelightConstants.kMin;
     }
 
+    double distanceAdjust = (LimelightConstants.desiredArea - limelight.getTargetArea()) * LimelightConstants.kPdist;
+
+    /*
+
     double distanceAdjust = (3 - limelight.getTargetArea()) * kPdist;
     if(distanceAdjust > .5){
       distanceAdjust = .5;
-    }
-    
-    System.out.println("Dist: " + distanceAdjust);
-    System.out.println("Rot: " + steeringAdjust);
+    }*/
 
-    drive.arcadeDrive(-steeringAdjust, -distanceAdjust);
-    System.out.println(steeringAdjust);
-    System.out.println(distanceAdjust);
+    if(steeringAdjust >= .4) {
+      steeringAdjust = .4;
+    } else if(steeringAdjust <= -.4) {
+      steeringAdjust = -.4;
+    }
+
+    if(distanceAdjust > .5) {
+      distanceAdjust = .5;
+    }
+
+
+    System.out.println("Dist: " + distanceAdjust);
+    System.out.println("Rot: " + -steeringAdjust);
+
+
+
+    drive.arcadeDrive(-steeringAdjust, distanceAdjust);
   }
 
   @Override

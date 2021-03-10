@@ -61,7 +61,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();
   private final Pneumatics pneumatics = new Pneumatics();
   private final WheelOfPain wheel = new WheelOfPain();
-  private final Shooter shooter = new Shooter();
+  //private final Shooter shooter = new Shooter();
   private final Hopper hopper = new Hopper();
 
   private final SendableChooser<Command> chooser = new SendableChooser<>();
@@ -91,7 +91,7 @@ public class RobotContainer {
 
     targetAcquired.whileHeld(new LockTarget(drive, vision));
     intakeButton.toggleWhenPressed(new IntakeManipulator(intake, hopper));
-    shooterButton.whileHeld(new ShootBall(shooter, hopper));
+    //shooterButton.whileHeld(new ShootBall(shooter, hopper));
   }
 
   public void configDefaultCommands(){

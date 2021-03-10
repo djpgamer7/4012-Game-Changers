@@ -38,20 +38,20 @@ public class DriveTrain extends SubsystemBase {
   private final WPI_TalonFX m_rightFront;
   private final WPI_TalonFX m_rightBack;
 
-  //private final DifferentialDrive myRobot;
+  private final DifferentialDrive myRobot;
 
-  private final ADIS16470_IMU gyro;
+  //private final ADIS16470_IMU gyro;
 
   //DiffDriveKinematics must be in SI units, inches to meters, track width!
-  public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
+  //public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
   //public final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
 
-  public final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(AutoConstants.kS, AutoConstants.kV, AutoConstants.kA);
+  //public final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(AutoConstants.kS, AutoConstants.kV, AutoConstants.kA);
 
-  public final PIDController leftPidController = new PIDController(AutoConstants.kP, 0, 0);
-  public final PIDController rightPidController = new PIDController(AutoConstants.kP, 0, 0);
+  //public final PIDController leftPidController = new PIDController(AutoConstants.kP, 0, 0);
+  //public final PIDController rightPidController = new PIDController(AutoConstants.kP, 0, 0);
 
-  Pose2d pose;
+  //Pose2d pose;
 
   public DriveTrain() {
     //Initiates the motor controllers
@@ -60,7 +60,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    gyro = new ADIS16470_IMU();
+    //gyro = new ADIS16470_IMU();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
@@ -89,17 +89,19 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront.setNeutralMode(NeutralMode.Brake);
     m_rightBack.setNeutralMode(NeutralMode.Brake);
         
-    //myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
+    myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
+
+    myRobot.setSafetyEnabled(false);
   }
 
   @Override
   public void periodic() {
     /*
-    pose = odometry.update(getHeading(), 
-      m_leftFront.getSensorCollection().getIntegratedSensorPosition(), 
+    pose = odometry.update(getHeading(),
+      m_leftFront.getSensorCollection().getIntegratedSensorPosition(),
       m_rightFront.getSensorCollection().getIntegratedSensorPosition()
     );
-    */ 
+    */
   }
 
   /*
@@ -157,6 +159,7 @@ public class DriveTrain extends SubsystemBase {
    * @param yVal takes through a yspeed
    */
   public synchronized void arcadeDrive(double xVal, double yVal) {
-   // myRobot.arcadeDrive(xVal, yVal);
+    myRobot.arcadeDrive(xVal, yVal);
+    System.out.println("DRIVING!!");
   }
 }
