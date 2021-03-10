@@ -83,13 +83,13 @@ public class WheelOfPain extends SubsystemBase {
 
 
     //Im promise I am not insane, 90 degree offset based off of where their color sensor is compared to ours
-    if(neededColor == "B"){
+    if(neededColor.equals("B")){
       desiredColor = "Red";
-    } else if(neededColor == "R"){
+    } else if(neededColor.equals("R")){
       desiredColor = "Blue";
-    } else if(neededColor == "Y"){
+    } else if(neededColor.equals("Y")){
       desiredColor = "Green";
-    } else if(neededColor == "G") {
+    } else if(neededColor.equals("G")) {
       desiredColor = "Yellow";
     }
 
@@ -100,17 +100,15 @@ public class WheelOfPain extends SubsystemBase {
   //Spins the wheel for 3 rotations and matches color
   //We see the color once, two colors per rotation, land on it at 7
   public synchronized void matchColor(){
-    if(colorStr == desiredColor){
+    if(colorStr.equals(desiredColor)){
       colorCount += 1;
     }    
 
     if(colorCount < 7){
-      colorWheelSpinner.set(ControlMode.PercentOutput, .8);
+      colorWheelSpinner.set(ControlMode.PercentOutput, .5);
     } else {
       colorWheelSpinner.set(ControlMode.PercentOutput, 0);
       System.out.println("At Color");
     }
-
-    System.out.println(desiredColor);
   } 
 }
