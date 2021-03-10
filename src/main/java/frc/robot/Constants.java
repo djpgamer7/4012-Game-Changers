@@ -36,11 +36,8 @@ public final class Constants {
     public static final int SHOOTER_MOTOR = 5;  
     //Wheel Spinner
     public static final int WHEEL_MOTOR = 9; //White
-    //Elevator
-    public static final int ELEVATOR1 = 10; //
-    public static final int ELEVATOR2 = 11; //
     //LED's
-    public static final int LEDSTRIP = 0;
+    //public static final int LEDSTRIP = 0;
     //-----------------------------OI-----------------------------//
     public static final int LEFT_JOY = 0;
     public static final int RIGHT_JOY = 1;
@@ -52,7 +49,5 @@ public final class Constants {
     public static final double shooterkD = .001;
 
     //-----------------------------Shooter Constants-----------------------------//
-    public static final int shooterUnitsPerRevolution = 2048;
-    public static final int shooterTimeout = 200;
     public static final double shooterSetPoint = 300;
 }

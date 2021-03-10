@@ -16,8 +16,8 @@ public class Limelight extends SubsystemBase {
 
   public class LimelightConstants {
     public static final double kProt = .053;
-    public static final double kPdist = .26;
-    public static final double kMin = .04;
+    public static final double kPdist = .23;
+    public static final double kMin = .03;
     public static final double maxSpeed = .7;
     public static final double desiredArea = 4;
   }

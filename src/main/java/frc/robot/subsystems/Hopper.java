@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -21,6 +22,13 @@ public class Hopper extends SubsystemBase {
     m_feeder = new VictorSPX(Constants.FEEDER_MOTOR);
 
     m_conveyor.setInverted(InvertType.InvertMotorOutput);
+
+    m_conveyor.setNeutralMode(NeutralMode.Coast);
+    m_feeder.setNeutralMode(NeutralMode.Coast);
+
+    m_conveyor.clearStickyFaults();
+    m_feeder.clearStickyFaults();
+
   }
   
   @Override
@@ -32,7 +40,7 @@ public class Hopper extends SubsystemBase {
     //m_feeder.set(ControlMode.PercentOutput, .8);
   }
 
-  public synchronized void shootBall() {
+  public synchronized void feedBall() {
     m_conveyor.set(ControlMode.PercentOutput, .8);
     m_feeder.set(ControlMode.PercentOutput, .8);
   }

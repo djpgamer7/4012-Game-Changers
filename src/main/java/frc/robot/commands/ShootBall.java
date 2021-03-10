@@ -32,7 +32,7 @@ public class ShootBall extends CommandBase {
   @Override
   public void execute() {
     //shooter.activateClosedLoopControl();
-    hopper.shootBall();
+    hopper.feedBall();
   }
 
   // Called once the command ends or is interrupted.

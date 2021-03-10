@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc.robot.subsystems.DriveTrain;
@@ -49,12 +50,6 @@ public class LockTarget extends CommandBase {
 
     double distanceAdjust = (LimelightConstants.desiredArea - limelight.getTargetArea()) * LimelightConstants.kPdist;
 
-    /*
-
-    double distanceAdjust = (3 - limelight.getTargetArea()) * kPdist;
-    if(distanceAdjust > .5){
-      distanceAdjust = .5;
-    }*/
 
     if(steeringAdjust >= .4) {
       steeringAdjust = .4;
@@ -64,20 +59,18 @@ public class LockTarget extends CommandBase {
 
     if(distanceAdjust > .5) {
       distanceAdjust = .5;
+    } else if(distanceAdjust < -.5) {
+      distanceAdjust = -.5;
     }
-
-<<<<<<< HEAD
 
     System.out.println("Dist: " + distanceAdjust);
     System.out.println("Rot: " + -steeringAdjust);
-
-
-=======
-    distanceAdjust = Double.parseDouble(dF.format(distanceAdjust));
-    steeringAdjust = Double.parseDouble(dF.format(dF.format(steeringAdjust)));
->>>>>>> f3ef3ef41c8eebb45f0e961673e178ba104e4aa0
+    SmartDashboard.putNumber("Distance: ", distanceAdjust);
+    SmartDashboard.putNumber("Rotation: ", -steeringAdjust);
 
     drive.arcadeDrive(-steeringAdjust, distanceAdjust);
+
+
   }
 
   @Override

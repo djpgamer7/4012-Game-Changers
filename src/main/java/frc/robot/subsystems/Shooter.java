@@ -13,6 +13,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -26,93 +27,74 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
  * @version 3/2/2020
  */
 public class Shooter extends SubsystemBase {
-<<<<<<< HEAD
-  /*private final TalonFX m_shooter;
-=======
-
   public static CANSparkMax shooterMotor;
   public static CANEncoder shooterEnc;
-  /*
-  private final TalonFX m_shooter;
->>>>>>> f3ef3ef41c8eebb45f0e961673e178ba104e4aa0
+  public static SmartDashboard dashboard;
+  private static boolean atSetpoint;
+
 
   private double targetVelocityPer100ms = Constants.shooterSetPoint * 500.0 * 4096 / 600;
 
-   */
   public Shooter() {
     shooterMotor = new CANSparkMax(Constants.SHOOTER_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
-
-    shooterMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    shooterMotor.clearFaults();
+    shooterMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    shooterEnc.setInverted(false);
 
     shooterEnc = shooterMotor.getEncoder();
 
-    /*
-    m_shooter = new TalonFX(Constants.SHOOTER_MOTOR);
-
-    m_shooter.configFactoryDefault();
-
-    m_shooter.setInverted(InvertType.None);
-    m_shooter.setNeutralMode(NeutralMode.Coast);
-
-    m_shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, Constants.shooterTimeout);
-
-    m_shooter.setSensorPhase(false);
-
-    m_shooter.config_kP(0, Constants.shooterkP, Constants.shooterTimeout);
-    m_shooter.config_kI(0, Constants.shooterkI, Constants.shooterTimeout);
-    m_shooter.config_kD(0, Constants.shooterkD, Constants.shooterTimeout);
-
-    
-
-    m_shooter.configNominalOutputForward(0, Constants.shooterTimeout);
-    m_shooter.configNominalOutputReverse(0, Constants.shooterTimeout);
-    m_shooter.configPeakOutputForward(0.8, Constants.shooterTimeout);
-    m_shooter.configPeakOutputReverse(-0.8, Constants.shooterTimeout);
-
-     */
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Shooter RPM", getRpm());
+    SmartDashboard.putNumber("Shooter Pos", getPosition());
   }
 
   public double getRpm() {
     return shooterEnc.getCountsPerRevolution();
   }
 
+  public double getPosition() {
+    return shooterEnc.getPosition();
+  }
+
   public synchronized void setVelocity(double velocity) {
     double shooterVal = 0;
-    boolean atSetPoint = false;
     if(shooterEnc.getVelocity() < velocity) {
+      double diff = shooterEnc.getVelocity() - velocity;
+
+      shooterVal = diff * Constants.shooterkP;
+      if(shooterVal > .7) {
+        shooterVal = .7;
+      }
+    } else if(shooterEnc.getVelocity() > velocity) {
       double diff = velocity - shooterEnc.getVelocity();
 
-      if(diff > .7) {
-        diff = .7;
-      }
-
       shooterVal = diff * Constants.shooterkP;
-    } else if(shooterEnc.getVelocity() > velocity) {
-      double diff = velocity + shooterEnc.getVelocity();
 
-      if(diff > .7) {
-        diff = .7;
+      if(shooterVal < -.7) {
+        shooterVal = -.7;
       }
-
-      shooterVal = diff * Constants.shooterkP;
     }
 
-    if(velocity == shooterEnc.getVelocity()) {
-      atSetPoint = true;
-    } else {
-      atSetPoint = false;
-    }
+    SmartDashboard.putNumber("Shooter Val", shooterVal);
 
     shooterMotor.set(shooterVal);
   }
 
   public synchronized void setSpeed(double speed) {
     shooterMotor.set(speed);
+  }
+
+  public boolean atSetpoint() {
+    if(this.getRpm() == Constants.shooterSetPoint) {
+      atSetpoint = true;
+      return true;
+    }
+    atSetpoint = false;
+    return false;
   }
   /*
 
@@ -140,8 +122,5 @@ public class Shooter extends SubsystemBase {
     return false;
 <<<<<<< HEAD
   }*/
-=======
-  }
-   */
->>>>>>> f3ef3ef41c8eebb45f0e961673e178ba104e4aa0
 }
+
