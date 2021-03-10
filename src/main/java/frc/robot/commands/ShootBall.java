@@ -13,7 +13,7 @@ import frc.robot.subsystems.Shooter;
 
 public class ShootBall extends CommandBase {
   //private Shooter shooter;
-  private Hopper hopper;
+  private final Hopper hopper;
 
   public ShootBall(Shooter subsystem1, Hopper subsystem2) {
     //shooter = subsystem1;

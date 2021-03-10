@@ -27,11 +27,12 @@ public class GameData extends SubsystemBase {
 
   public synchronized void getGameData(){
     char data = 'n';
-    String toDashboard = Character.toString(data);
+
 
     if(DriverStation.getInstance().getGameSpecificMessage().length() > 0){
       data = DriverStation.getInstance().getGameSpecificMessage().charAt(0);
     }
+    String toDashboard = Character.toString(data);
 
     SmartDashboard.putString("Control Color", toDashboard);
   }

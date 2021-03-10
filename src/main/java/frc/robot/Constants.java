@@ -11,6 +11,8 @@ package frc.robot;
  * @author Daniel Pearson
  * @version 2/24/2020
  */
+
+@SuppressWarnings("unused")
 public final class Constants {
 
     public class AutoConstants {
@@ -37,7 +39,7 @@ public final class Constants {
     //Wheel Spinner
     public static final int WHEEL_MOTOR = 9; //White
     //LED's
-    //public static final int LEDSTRIP = 0;
+    public static final int LEDSTRIP = 0;
     //-----------------------------OI-----------------------------//
     public static final int LEFT_JOY = 0;
     public static final int RIGHT_JOY = 1;

@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class PowerDistro extends SubsystemBase {
   private final PowerDistributionPanel panel;
   
-  private double temp;
-  private double energy;
+  double temp;
+  double energy;
 
   public PowerDistro() {
     panel = new PowerDistributionPanel();

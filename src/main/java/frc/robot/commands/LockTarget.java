@@ -23,8 +23,8 @@ public class LockTarget extends CommandBase {
   public Limelight limelight;
   public DecimalFormat dF = new DecimalFormat("0.000");
 
-  private double kProt = LimelightConstants.kProt;
-  private double kPdist = LimelightConstants.kPdist;
+  double kProt = LimelightConstants.kProt;
+  double kPdist = LimelightConstants.kPdist;
 
   public LockTarget(DriveTrain subsystem, Limelight vision) {
     drive = subsystem;

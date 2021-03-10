@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * @version 2/15/2020
  */
 public class Pneumatics extends SubsystemBase {
-  private Compressor comp;
+  private final Compressor comp;
 
   public Pneumatics() {
     comp = new Compressor();

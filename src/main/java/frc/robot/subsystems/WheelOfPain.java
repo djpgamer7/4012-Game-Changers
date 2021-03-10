@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.util.Color;
  * @version 2/10/2020
  */
 public class WheelOfPain extends SubsystemBase {
-  private final I2C.Port sensorPort;
+  final I2C.Port sensorPort;
 
   private final ColorSensorV3 colorSensor;
 

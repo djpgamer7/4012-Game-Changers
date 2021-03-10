@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Limelight extends SubsystemBase {
 
-  public class LimelightConstants {
+  public static class LimelightConstants {
     public static final double kProt = .053;
     public static final double kPdist = .23;
     public static final double kMin = .03;
@@ -31,12 +31,12 @@ public class Limelight extends SubsystemBase {
   }
 
   private final NetworkTable limelightTable;
-  private NetworkTableEntry tx;
-  private NetworkTableEntry ty;
-  private NetworkTableEntry ta;
-  private NetworkTableEntry tv;
-  private NetworkTableEntry camState;
-  private NetworkTableEntry ledState;
+  NetworkTableEntry tx;
+  NetworkTableEntry ty;
+  NetworkTableEntry ta;
+  NetworkTableEntry tv;
+  NetworkTableEntry camState;
+  NetworkTableEntry ledState;
 
   private double xError;
   private double yError;

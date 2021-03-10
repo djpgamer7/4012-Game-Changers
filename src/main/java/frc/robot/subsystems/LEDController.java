@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 public class LEDController extends SubsystemBase {
   
   public enum LEDColors {
-    RED, GREEN, BLUE, ORANGE;
+    RED, GREEN, BLUE, ORANGE
   }
   private final AddressableLED ledStrip = new AddressableLED(Constants.LEDSTRIP);
   private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(60);

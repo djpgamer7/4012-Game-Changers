@@ -7,20 +7,14 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
  * @author Daniel Pearson 
@@ -29,11 +23,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class Shooter extends SubsystemBase {
   public static CANSparkMax shooterMotor;
   public static CANEncoder shooterEnc;
-  public static SmartDashboard dashboard;
-  private static boolean atSetpoint;
-
-
-  private double targetVelocityPer100ms = Constants.shooterSetPoint * 500.0 * 4096 / 600;
 
   public Shooter() {
     shooterMotor = new CANSparkMax(Constants.SHOOTER_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -90,10 +79,8 @@ public class Shooter extends SubsystemBase {
 
   public boolean atSetpoint() {
     if(this.getRpm() == Constants.shooterSetPoint) {
-      atSetpoint = true;
       return true;
     }
-    atSetpoint = false;
     return false;
   }
   /*
