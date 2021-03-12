@@ -160,6 +160,5 @@ public class DriveTrain extends SubsystemBase {
    */
   public synchronized void arcadeDrive(double xVal, double yVal) {
     myRobot.arcadeDrive(xVal, yVal);
-    System.out.println("DRIVING!!");
   }
 }

@@ -21,16 +21,25 @@ import frc.robot.Constants;
  * @version 3/2/2020
  */
 public class Shooter extends SubsystemBase {
-  public static CANSparkMax shooterMotor;
+  public static CANSparkMax shooterMotor1;
+  public static CANSparkMax shooterMotor2;
   public static CANEncoder shooterEnc;
 
   public Shooter() {
-    shooterMotor = new CANSparkMax(Constants.SHOOTER_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
-    shooterMotor.clearFaults();
-    shooterMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    shooterEnc.setInverted(false);
+    shooterMotor1 = new CANSparkMax(Constants.SHOOTER_MOTOR1, CANSparkMax.MotorType.kBrushless);
+    shooterMotor2 = new CANSparkMax(Constants.SHOOTER_MOTOR2, CANSparkMax.MotorType.kBrushless);
 
-    shooterEnc = shooterMotor.getEncoder();
+    shooterMotor1.clearFaults();
+    shooterMotor1.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
+    shooterMotor2.clearFaults();
+    shooterMotor2.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
+    shooterMotor1.setInverted(false);
+    shooterMotor2.setInverted(true);
+
+
+    shooterEnc = shooterMotor1.getEncoder();
 
   }
 
@@ -70,11 +79,13 @@ public class Shooter extends SubsystemBase {
 
     SmartDashboard.putNumber("Shooter Val", shooterVal);
 
-    shooterMotor.set(shooterVal);
+    shooterMotor1.set(shooterVal);
+    shooterMotor2.set(shooterVal);
   }
 
   public synchronized void setSpeed(double speed) {
-    shooterMotor.set(speed);
+    shooterMotor1.set(speed);
+    shooterMotor2.set(speed);
   }
 
   public boolean atSetpoint() {
@@ -82,6 +93,11 @@ public class Shooter extends SubsystemBase {
       return true;
     }
     return false;
+  }
+
+  public void stop() {
+    shooterMotor1.set(0);
+    shooterMotor2.set(0);
   }
   /*
 

@@ -63,12 +63,8 @@ public class LockTarget extends CommandBase {
       distanceAdjust = -.5;
     }
 
-    System.out.println("Dist: " + distanceAdjust);
-    System.out.println("Rot: " + -steeringAdjust);
-    SmartDashboard.putNumber("Distance: ", distanceAdjust);
-    SmartDashboard.putNumber("Rotation: ", -steeringAdjust);
+    drive.arcadeDrive(-steeringAdjust, -distanceAdjust);
 
-    drive.arcadeDrive(-steeringAdjust, distanceAdjust);
 
 
   }

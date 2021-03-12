@@ -35,7 +35,8 @@ public final class Constants {
     public static final int CONVEYOR_MOTOR = 6; //Grey
     public static final int FEEDER_MOTOR = 7; //Blue
     //Shooter
-    public static final int SHOOTER_MOTOR = 5;  
+    public static final int SHOOTER_MOTOR1 = 5;
+    public static final int SHOOTER_MOTOR2 = 10;
     //Wheel Spinner
     public static final int WHEEL_MOTOR = 9; //White
     //LED's

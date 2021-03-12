@@ -37,7 +37,7 @@ public class Hopper extends SubsystemBase {
 
   public synchronized void carryBall(){
     m_conveyor.set(ControlMode.PercentOutput, .8);
-    //m_feeder.set(ControlMode.PercentOutput, .8);
+    m_feeder.set(ControlMode.PercentOutput, 1);
   }
 
   public synchronized void feedBall() {

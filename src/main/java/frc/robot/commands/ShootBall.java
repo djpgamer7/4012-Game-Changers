@@ -12,11 +12,11 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
 
 public class ShootBall extends CommandBase {
-  //private Shooter shooter;
+  private Shooter shooter;
   private final Hopper hopper;
 
   public ShootBall(Shooter subsystem1, Hopper subsystem2) {
-    //shooter = subsystem1;
+    shooter = subsystem1;
     hopper = subsystem2;
     
     addRequirements(hopper);
@@ -33,12 +33,14 @@ public class ShootBall extends CommandBase {
   public void execute() {
     //shooter.activateClosedLoopControl();
     hopper.feedBall();
+    shooter.setSpeed(1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     hopper.stop();
+    shooter.stop();
   }
 
   // Returns true when the command should end.
