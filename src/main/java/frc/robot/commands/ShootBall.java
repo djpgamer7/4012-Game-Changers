@@ -33,7 +33,7 @@ public class ShootBall extends CommandBase {
   public void execute() {
     //shooter.activateClosedLoopControl();
     hopper.feedBall();
-    shooter.setSpeed(1);
+    shooter.setSpeed(.85);
   }
 
   // Called once the command ends or is interrupted.
