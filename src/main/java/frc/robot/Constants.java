@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+
 /**
  * @author Daniel Pearson
  * @version 2/24/2020
@@ -15,11 +17,23 @@ package frc.robot;
 @SuppressWarnings("unused")
 public final class Constants {
 
-    public class AutoConstants {
-        public static final double kS = 0.0;
-        public static final double kV = 0.0;
-        public static final double kA = 0.0;
-        public static final double kP = 9.95;
+    public static class AutoConstants {
+        //NEED TO RE-TUNE ALL VALS
+        public static final double ksVolts = .22;
+        public static final double kvVoltSecondsPerMeter = 1.98;
+        public static final double kaVoltSecondsSquaredPerMeter = .2;
+
+        public static final double kPDriveVel = 8.5;
+
+        public static final double kMaxSpeed = 4;
+        public static final double kMaxAcceleration = 3;
+
+        public static final double kRameseteB = 2;
+        public static final double kRameseteZeta = .7;
+        public static final double trackWidthMeters = .7239;
+
+        public static final DifferentialDriveKinematics kDriveKinematics =
+                new DifferentialDriveKinematics(trackWidthMeters);
     }
     //-----------------------------Subsystems-----------------------------//
     //DriveBase

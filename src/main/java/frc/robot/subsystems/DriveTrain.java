@@ -8,18 +8,16 @@
 package frc.robot.subsystems;
 
 import com.analog.adis16470.frc.ADIS16470_IMU;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.util.Units;
-import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
+import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Constants;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 //import com.analog.adis16470.frc.ADIS16470_IMU;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -40,7 +38,13 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive myRobot;
 
-  //private final ADIS16470_IMU gyro;
+  private final ADIS16470_IMU gyro;
+
+  private final TalonFXSensorCollection leftEnc;
+  private final TalonFXSensorCollection rightEnc;
+
+  private final DifferentialDriveKinematics kinematics;
+  private final DifferentialDriveOdometry odometry;
 
   //DiffDriveKinematics must be in SI units, inches to meters, track width!
   //public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
@@ -60,7 +64,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    //gyro = new ADIS16470_IMU();
+    gyro = new ADIS16470_IMU();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
@@ -88,8 +92,15 @@ public class DriveTrain extends SubsystemBase {
     m_leftBack.setNeutralMode(NeutralMode.Brake);
     m_rightFront.setNeutralMode(NeutralMode.Brake);
     m_rightBack.setNeutralMode(NeutralMode.Brake);
+
+    leftEnc = m_leftFront.getSensorCollection();
+    rightEnc = m_rightFront.getSensorCollection();
         
     myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
+
+    kinematics = new DifferentialDriveKinematics(.7239);
+
+    odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
     myRobot.setSafetyEnabled(false);
   }
@@ -102,6 +113,50 @@ public class DriveTrain extends SubsystemBase {
       m_rightFront.getSensorCollection().getIntegratedSensorPosition()
     );
     */
+
+    odometry.update(gyro.getRotation2d(), this.getLeftDistance(), this.getRightDistance());
+
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  public DifferentialDriveWheelSpeeds getSpeeds(){
+    return new DifferentialDriveWheelSpeeds(
+            m_leftFront.getSensorCollection().getIntegratedSensorVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60,
+            m_rightFront.getSensorCollection().getIntegratedSensorVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60
+    );
+  }
+
+  public void resetSensors(Pose2d pose) {
+    nullEncoders();
+    odometry.resetPosition(pose, gyro.getRotation2d());
+  }
+
+  public double getLeftDistance() {
+    return leftEnc.getIntegratedSensorPosition();
+  }
+
+  public double getRightDistance() {
+    return rightEnc.getIntegratedSensorPosition();
+  }
+
+  public TalonFXSensorCollection getLeftEnc() {
+    return leftEnc;
+  }
+
+  public TalonFXSensorCollection getRightEnc() {
+    return rightEnc;
+  }
+
+  public void nullEncoders() {
+    leftEnc.setIntegratedSensorPosition(0, 10);
+    rightEnc.setIntegratedSensorPosition(0, 10);
+  }
+
+  public DifferentialDriveKinematics getKinematics() {
+    return kinematics;
   }
 
   /*
@@ -109,12 +164,7 @@ public class DriveTrain extends SubsystemBase {
     return Rotation2d.fromDegrees(-gyro.getAngle());
   }
 
-  public DifferentialDriveWheelSpeeds getSpeeds(){
-    return new DifferentialDriveWheelSpeeds(
-      m_leftFront.getSensorCollection().getIntegratedSensorVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60,
-      m_rightFront.getSensorCollection().getIntegratedSensorVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60
-    );
-  }
+
 
   public DifferentialDriveKinematics getKinematics(){
     return kinematics;
@@ -160,5 +210,31 @@ public class DriveTrain extends SubsystemBase {
    */
   public synchronized void arcadeDrive(double xVal, double yVal) {
     myRobot.arcadeDrive(xVal, yVal);
+  }
+
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    m_leftFront.setVoltage(leftVolts);
+    m_rightFront.setVoltage(-rightVolts);
+    myRobot.feed();
+  }
+
+  public double getAvgDistance() {
+    return (leftEnc.getIntegratedSensorPosition() + rightEnc.getIntegratedSensorPosition()) / 2.0;
+  }
+
+  public void setMaxOutput(double maxOutput) {
+    myRobot.setMaxOutput(maxOutput);
+  }
+
+  public void zeroHeading() {
+    gyro.reset();
+  }
+
+  public double getHeading() {
+    return gyro.getRotation2d().getDegrees();
+  }
+
+  public double getTurnRate() {
+    return -gyro.getRate();
   }
 }
