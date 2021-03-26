@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -42,6 +45,8 @@ import frc.robot.commands.ShootBall;
 
 import frc.robot.controllers.DanController;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -110,22 +115,22 @@ public class RobotContainer {
                     10
             );
 
-    TrajectoryConfig config1 =
+    TrajectoryConfig config =
             new TrajectoryConfig(
                     Constants.AutoConstants.kMaxSpeed,
                     Constants.AutoConstants.kMaxAcceleration
             ).setKinematics(Constants.AutoConstants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
 
-    Trajectory testTrajectory = TrajectoryGenerator.generateTrajectory(
-            new Pose2d(0, 0, new Rotation2d(0)),
-            List.of(
-                    new Translation2d(1, 1),
-                    new Translation2d(2, -1)
-            ),
-            new Pose2d(3, 0, new Rotation2d(0)),
-            config1
-    );
+    String testTrajectoryJson = "/paths/TestPath.wpilib.json";
+    Trajectory testTrajectory = new Trajectory();
+    try {
+      Path testPath = Filesystem.getDeployDirectory().toPath().resolve(testTrajectoryJson);
+      testTrajectory = TrajectoryUtil.fromPathweaverJson(testPath);
+    } catch(IOException e) {
+      DriverStation.reportError("Unable to open trajectory: " + testTrajectoryJson, e.getStackTrace());
+    }
+
 
     RamseteCommand testCommand = new RamseteCommand(
             testTrajectory,
