@@ -61,7 +61,7 @@ public final class Constants {
     public static final int MANIP_CONTROLLER = 2;
     //-----------------------------PID VALUE-----------------------------//
     //DO NOT RUN ANYTHING OFF OF THESE VALUES
-    public static final double shooterkP = .1;
+    public static final double shooterkP = .0001;
     public static final double shooterkI = .01;
     public static final double shooterkD = .001;
 

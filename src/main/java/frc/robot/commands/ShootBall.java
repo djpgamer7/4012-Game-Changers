@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
@@ -14,6 +15,9 @@ import frc.robot.subsystems.Shooter;
 public class ShootBall extends CommandBase {
   private Shooter shooter;
   private final Hopper hopper;
+
+  private final int setpoint = 4500;
+  private final int acceptance = 650;
 
   public ShootBall(Shooter subsystem1, Hopper subsystem2) {
     shooter = subsystem1;
@@ -32,8 +36,18 @@ public class ShootBall extends CommandBase {
   @Override
   public void execute() {
     //shooter.activateClosedLoopControl();
-    hopper.feedBall();
-    shooter.setSpeed(.2);
+    shooter.setVelocity(setpoint);
+
+    double error = (shooter.getRpm()+setpoint);
+
+    System.out.println(error);
+    if(error < acceptance) {
+      hopper.feedBall();
+    }
+
+
+
+
   }
 
   // Called once the command ends or is interrupted.

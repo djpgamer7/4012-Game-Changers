@@ -19,7 +19,7 @@ public class Limelight extends SubsystemBase {
     public static final double kPdist = .25;
     public static final double kMin = .04;
     public static final double maxSpeed = .7;
-    public static final double desiredArea = 4;
+    public static final double desiredArea = 3;
   }
 
   public enum LedModes {

@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +25,8 @@ public class PowerDistro extends SubsystemBase {
   public PowerDistro() {
     panel = new PowerDistributionPanel();
     panel.clearStickyFaults();
+
+    LiveWindow.disableTelemetry(panel);
   }
 
   @Override

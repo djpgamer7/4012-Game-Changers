@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -47,6 +48,7 @@ import frc.robot.controllers.DanController;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.Driver;
 import java.util.List;
 
 /**
@@ -74,6 +76,8 @@ public class RobotContainer {
     // Configure the button bindings
     configDefaultCommands();
     configureButtonBindings();
+
+    NetworkTableInstance.getDefault().setUpdateRate(.010);
 
     /*
     chooser.setDefaultOption("Blue 1", new Blue1(drive, intake, vision, shooter, hopper));

@@ -11,6 +11,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -51,7 +52,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getRpm() {
-    return shooterEnc.getCountsPerRevolution();
+    return shooterEnc.getVelocity();
   }
 
   public double getPosition() {
@@ -79,8 +80,9 @@ public class Shooter extends SubsystemBase {
 
     SmartDashboard.putNumber("Shooter Val", shooterVal);
 
+    System.out.println(shooterVal);
+
     shooterMotor1.set(shooterVal);
-    //shooterMotor2.set(shooterVal);
   }
 
   public synchronized void setSpeed(double speed) {

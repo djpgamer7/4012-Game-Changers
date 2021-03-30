@@ -8,11 +8,13 @@
 package frc.robot.subsystems;
 
 import com.analog.adis16470.frc.ADIS16470_IMU;
-import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
+import com.ctre.phoenix.motorcontrol.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,9 +22,6 @@ import frc.robot.Constants;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 //import com.analog.adis16470.frc.ADIS16470_IMU;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 /**
@@ -45,6 +44,8 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDriveKinematics kinematics;
   private final DifferentialDriveOdometry odometry;
+
+  private final double k_encoderConstant = (1 / 1) * (1 / 8192);
 
   //DiffDriveKinematics must be in SI units, inches to meters, track width!
   //public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
@@ -78,6 +79,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightBack.configFactoryDefault();
 
     //Sets the Back motors to follow the front
+
     m_leftBack.set(ControlMode.Follower, m_leftFront.getDeviceID());
     m_rightBack.set(ControlMode.Follower, m_rightFront.getDeviceID());
 
@@ -87,16 +89,21 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront.setInverted(InvertType.None);
     m_rightBack.setInverted(InvertType.FollowMaster);
 
-    //Sets the motos to brake mode
+    //Sets the motors to brake mode
     m_leftFront.setNeutralMode(NeutralMode.Brake);
     m_leftBack.setNeutralMode(NeutralMode.Brake);
     m_rightFront.setNeutralMode(NeutralMode.Brake);
     m_rightBack.setNeutralMode(NeutralMode.Brake);
 
-    leftEnc = m_leftFront.getSensorCollection();
+    m_leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    m_rightFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+
     rightEnc = m_rightFront.getSensorCollection();
+    leftEnc = m_leftFront.getSensorCollection();
         
     myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
+
+    myRobot.setDeadband(0);
 
     kinematics = new DifferentialDriveKinematics(.7239);
 
@@ -116,16 +123,24 @@ public class DriveTrain extends SubsystemBase {
 
     odometry.update(gyro.getRotation2d(), this.getLeftDistance(), this.getRightDistance());
 
+    SmartDashboard.putNumber("Left Pos", getLeftDistance());
+    SmartDashboard.putNumber("Right Pos", getRightDistance());
+    SmartDashboard.putNumber("Velocity", getLeftVelocity());
+
+    if(DriverStation.getInstance().isDisabled()) {
+      resetSensors(getPose());
+    }
+
   }
 
   public Pose2d getPose() {
     return odometry.getPoseMeters();
   }
 
-  public DifferentialDriveWheelSpeeds getSpeeds(){
+  public DifferentialDriveWheelSpeeds getSpeeds() {
     return new DifferentialDriveWheelSpeeds(
-            m_leftFront.getSensorCollection().getIntegratedSensorVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60,
-            m_rightFront.getSensorCollection().getIntegratedSensorVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60
+            this.getLeftVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60,
+            this.getRightVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60
     );
   }
 
@@ -135,11 +150,19 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public double getLeftDistance() {
-    return leftEnc.getIntegratedSensorPosition();
+    return m_leftFront.getSelectedSensorPosition() * k_encoderConstant;
   }
 
   public double getRightDistance() {
-    return rightEnc.getIntegratedSensorPosition();
+    return m_rightFront.getSelectedSensorPosition() / k_encoderConstant;
+  }
+
+  public double getLeftVelocity() {
+    return m_leftFront.getSelectedSensorVelocity() * k_encoderConstant * 10;
+  }
+
+  public double getRightVelocity() {
+    return m_rightFront.getSelectedSensorVelocity() * k_encoderConstant * 10;
   }
 
   public TalonFXSensorCollection getLeftEnc() {
@@ -159,34 +182,6 @@ public class DriveTrain extends SubsystemBase {
     return kinematics;
   }
 
-  /*
-  public Rotation2d getHeading(){
-    return Rotation2d.fromDegrees(-gyro.getAngle());
-  }
-
-
-
-  public DifferentialDriveKinematics getKinematics(){
-    return kinematics;
-  }
-
-  public SimpleMotorFeedforward getFeedForward(){
-    return feedForward;
-  }
-
-  public Pose2d getPose() {
-    return pose;
-  }
-
-  public PIDController getLeftPIDController(){
-    return leftPidController;
-  }
-
-  public PIDController getRightPIDController(){
-    return rightPidController;
-  }
-  */
-
   //Allows manual control of the robot
 
   /**
@@ -197,12 +192,6 @@ public class DriveTrain extends SubsystemBase {
     m_leftFront.set(ControlMode.PercentOutput, leftVal);
     m_rightFront.set(ControlMode.PercentOutput, rightVal);
   }
-  /*
-  public synchronized void voltageDrive(double leftVolts, double rightVolts){
-    m_leftFront.setVoltage(leftVolts);
-    m_rightFront.setVoltage(-rightVolts);
-    myRobot.feed();
-  }*/
 
   /**
    * @param xVal takes through an xspeed 
@@ -218,9 +207,6 @@ public class DriveTrain extends SubsystemBase {
     myRobot.feed();
   }
 
-  public double getAvgDistance() {
-    return (leftEnc.getIntegratedSensorPosition() + rightEnc.getIntegratedSensorPosition()) / 2.0;
-  }
 
   public void setMaxOutput(double maxOutput) {
     myRobot.setMaxOutput(maxOutput);
