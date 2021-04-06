@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.analog.adis16470.frc.ADIS16470_IMU;
 import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
@@ -20,14 +21,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-//import com.analog.adis16470.frc.ADIS16470_IMU;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
-/**
- * @author Daniel Pearson
- * @version 2/21/2020
- */
 public class DriveTrain extends SubsystemBase {
 
   private final WPI_TalonFX m_leftFront;
@@ -39,24 +34,13 @@ public class DriveTrain extends SubsystemBase {
 
   private final ADIS16470_IMU gyro;
 
-  private final TalonFXSensorCollection leftEnc;
-  private final TalonFXSensorCollection rightEnc;
-
   private final DifferentialDriveKinematics kinematics;
   private final DifferentialDriveOdometry odometry;
 
-  private final double k_encoderConstant = (1 / 1) * (1 / 8192);
+  private final double k_encoderConstant = (1 / 8192);
 
-  //DiffDriveKinematics must be in SI units, inches to meters, track width!
-  //public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(28));
-  //public final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
+  private final double unitsPerRev = 8192;
 
-  //public final SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(AutoConstants.kS, AutoConstants.kV, AutoConstants.kA);
-
-  //public final PIDController leftPidController = new PIDController(AutoConstants.kP, 0, 0);
-  //public final PIDController rightPidController = new PIDController(AutoConstants.kP, 0, 0);
-
-  //Pose2d pose;
 
   public DriveTrain() {
     //Initiates the motor controllers
@@ -80,8 +64,18 @@ public class DriveTrain extends SubsystemBase {
 
     //Sets the Back motors to follow the front
 
+    TalonFXConfiguration configs = new TalonFXConfiguration();
+
+    configs.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+
     m_leftBack.set(ControlMode.Follower, m_leftFront.getDeviceID());
     m_rightBack.set(ControlMode.Follower, m_rightFront.getDeviceID());
+
+    m_leftFront.configAllSettings(configs);
+    m_rightFront.configAllSettings(configs);
+
+    m_leftFront.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+    m_rightFront.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
     //Determines which motors will be inverted
     m_leftFront.setInverted(InvertType.InvertMotorOutput);
@@ -94,12 +88,7 @@ public class DriveTrain extends SubsystemBase {
     m_leftBack.setNeutralMode(NeutralMode.Brake);
     m_rightFront.setNeutralMode(NeutralMode.Brake);
     m_rightBack.setNeutralMode(NeutralMode.Brake);
-
-    m_leftFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
-    m_rightFront.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
-
-    rightEnc = m_rightFront.getSensorCollection();
-    leftEnc = m_leftFront.getSensorCollection();
+    nullEncoders();
         
     myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
 
@@ -107,7 +96,9 @@ public class DriveTrain extends SubsystemBase {
 
     kinematics = new DifferentialDriveKinematics(.7239);
 
-    odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+
+    gyro.reset();
 
     myRobot.setSafetyEnabled(false);
   }
@@ -121,15 +112,13 @@ public class DriveTrain extends SubsystemBase {
     );
     */
 
-    odometry.update(gyro.getRotation2d(), this.getLeftDistance(), this.getRightDistance());
+    odometry.update(Rotation2d.fromDegrees(getHeading()), this.getLeftDistance(), this.getRightDistance());
 
     SmartDashboard.putNumber("Left Pos", getLeftDistance());
     SmartDashboard.putNumber("Right Pos", getRightDistance());
-    SmartDashboard.putNumber("Velocity", getLeftVelocity());
-
-    if(DriverStation.getInstance().isDisabled()) {
-      resetSensors(getPose());
-    }
+    SmartDashboard.putNumber("Left Speeds", getSpeeds().leftMetersPerSecond);
+    SmartDashboard.putNumber("Right Speeds", getSpeeds().rightMetersPerSecond);
+    SmartDashboard.putNumber("Gyro", -gyro.getAngle());
 
   }
 
@@ -137,45 +126,41 @@ public class DriveTrain extends SubsystemBase {
     return odometry.getPoseMeters();
   }
 
+
   public DifferentialDriveWheelSpeeds getSpeeds() {
     return new DifferentialDriveWheelSpeeds(
-            this.getLeftVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60,
-            this.getRightVelocity() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60
+            (getLeftRPM() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60),
+            (getRightRPM() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60)
     );
   }
 
-  public void resetSensors(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) {
     nullEncoders();
-    odometry.resetPosition(pose, gyro.getRotation2d());
+    odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
   }
 
   public double getLeftDistance() {
-    return m_leftFront.getSelectedSensorPosition() * k_encoderConstant;
+    return -m_leftFront.getSelectedSensorPosition(0) / unitsPerRev;
   }
 
   public double getRightDistance() {
-    return m_rightFront.getSelectedSensorPosition() / k_encoderConstant;
+    return -m_rightFront.getSelectedSensorPosition(0) / unitsPerRev;
   }
 
-  public double getLeftVelocity() {
-    return m_leftFront.getSelectedSensorVelocity() * k_encoderConstant * 10;
+  //Units: RPM
+  public double getLeftRPM() {
+    return -m_leftFront.getSelectedSensorVelocity(0) / unitsPerRev * 10 * 60;
   }
 
-  public double getRightVelocity() {
-    return m_rightFront.getSelectedSensorVelocity() * k_encoderConstant * 10;
+  //Units: RPM
+  public double getRightRPM() {
+    return -m_rightFront.getSelectedSensorVelocity(0) / unitsPerRev * 10 * 60;
   }
 
-  public TalonFXSensorCollection getLeftEnc() {
-    return leftEnc;
-  }
-
-  public TalonFXSensorCollection getRightEnc() {
-    return rightEnc;
-  }
 
   public void nullEncoders() {
-    leftEnc.setIntegratedSensorPosition(0, 10);
-    rightEnc.setIntegratedSensorPosition(0, 10);
+    m_rightFront.getSensorCollection().setIntegratedSensorPosition(0, 10);
+    m_leftFront.getSensorCollection().setIntegratedSensorPosition(0, 10);
   }
 
   public DifferentialDriveKinematics getKinematics() {
@@ -212,12 +197,12 @@ public class DriveTrain extends SubsystemBase {
     myRobot.setMaxOutput(maxOutput);
   }
 
-  public void zeroHeading() {
-    gyro.reset();
+  public double getHeading() {
+    return Math.IEEEremainder(gyro.getAngle(), 360) * (true ? -1.0 : 1.0);
   }
 
-  public double getHeading() {
-    return gyro.getRotation2d().getDegrees();
+  public void zeroHeading() {
+    gyro.reset();
   }
 
   public double getTurnRate() {

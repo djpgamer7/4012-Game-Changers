@@ -126,16 +126,55 @@ public class RobotContainer {
             ).setKinematics(Constants.AutoConstants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
 
-    String testTrajectoryJson = "/paths/TestPath.wpilib.json";
-    Trajectory testTrajectory = new Trajectory();
+    /*
+    String searchAJson = "paths/SearchA.wpilib.json";
+
+    Trajectory searchATrajectory = new Trajectory();
+
+
     try {
-      Path testPath = Filesystem.getDeployDirectory().toPath().resolve(testTrajectoryJson);
-      testTrajectory = TrajectoryUtil.fromPathweaverJson(testPath);
-    } catch(IOException e) {
-      DriverStation.reportError("Unable to open trajectory: " + testTrajectoryJson, e.getStackTrace());
-    }
+      Path galacticSearchAPath = Filesystem.getDeployDirectory().toPath().resolve(searchAJson);
+      searchATrajectory = TrajectoryUtil.fromPathweaverJson(galacticSearchAPath);
+    } catch (IOException e) {
+      DriverStation.reportError("Unable to open trajectory: " + searchAJson, e.getStackTrace());
+    }*/
 
+    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(
+                    new Translation2d(1, 1),
+                    new Translation2d(2, -1)
+            ),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(3, 0, new Rotation2d(0)),
+            // Pass config
+            config
+    );
 
+    RamseteCommand initialCommand = new RamseteCommand(
+            exampleTrajectory,
+            drive::getPose,
+            new RamseteController(Constants.AutoConstants.kRameseteB, Constants.AutoConstants.kRameseteZeta),
+            new SimpleMotorFeedforward(
+                    Constants.AutoConstants.ksVolts,
+                    Constants.AutoConstants.kvVoltSecondsPerMeter,
+                    Constants.AutoConstants.kaVoltSecondsSquaredPerMeter
+            ),
+            Constants.AutoConstants.kDriveKinematics,
+            drive::getSpeeds,
+            new PIDController(Constants.AutoConstants.kPDriveVel, 0, 0),
+            new PIDController(Constants.AutoConstants.kPDriveVel, 0, 0),
+            drive::tankDriveVolts,
+            drive
+    );
+
+    drive.resetOdometry(exampleTrajectory.getInitialPose());
+
+    return initialCommand.andThen(() -> drive.tankDriveVolts(0, 0));
+
+    /*
     RamseteCommand testCommand = new RamseteCommand(
             testTrajectory,
             drive::getPose,
@@ -152,9 +191,11 @@ public class RobotContainer {
             drive::tankDriveVolts,
             drive
     );
+    *
+     */
 
-    drive.resetSensors(testTrajectory.getInitialPose());
+    //drive.resetSensors(testTrajectory.getInitialPose());
 
-    return testCommand.andThen(() -> drive.tankDriveVolts(0, 0));
+    //return testCommand.andThen(() -> drive.tankDriveVolts(0, 0));
   }
 }
