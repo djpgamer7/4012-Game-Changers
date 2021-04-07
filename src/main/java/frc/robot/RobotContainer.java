@@ -8,6 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -40,6 +43,8 @@ import frc.robot.commands.RunCompressor;
 import frc.robot.commands.IntakeManipulator;
 import frc.robot.commands.ShootBall;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -117,7 +122,7 @@ public class RobotContainer {
             ).setKinematics(Constants.AutoConstants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
 
-    /*
+
     String searchAJson = "paths/SearchA.wpilib.json";
 
     Trajectory searchATrajectory = new Trajectory();
@@ -128,7 +133,7 @@ public class RobotContainer {
       searchATrajectory = TrajectoryUtil.fromPathweaverJson(galacticSearchAPath);
     } catch (IOException e) {
       DriverStation.reportError("Unable to open trajectory: " + searchAJson, e.getStackTrace());
-    }*/
+    }
 
     /*
 
@@ -148,7 +153,7 @@ public class RobotContainer {
             drive::tankDriveVolts,
             drive
     );*/
-
+    /*
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
@@ -162,10 +167,12 @@ public class RobotContainer {
         config
     );
 
-    drive.resetOdometry(exampleTrajectory.getInitialPose());
+     */
+
+    drive.resetOdometry(searchATrajectory.getInitialPose());
 
     RamseteCommand exampleCommand = new RamseteCommand(
-            exampleTrajectory,
+            searchATrajectory,
             drive::getPose,
             new RamseteController(Constants.AutoConstants.kRameseteB, Constants.AutoConstants.kRameseteZeta),
             new SimpleMotorFeedforward(
