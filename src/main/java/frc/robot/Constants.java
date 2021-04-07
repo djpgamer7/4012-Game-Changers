@@ -19,18 +19,18 @@ public final class Constants {
 
     public static class AutoConstants {
         //NEED TO RE-TUNE ALL VALS
-        public static final double ksVolts = .469;
-        public static final double kvVoltSecondsPerMeter = .469;
-        public static final double kaVoltSecondsSquaredPerMeter = .0263;
+        public static final double ksVolts = .533;
+        public static final double kvVoltSecondsPerMeter = .501;
+        public static final double kaVoltSecondsSquaredPerMeter = .0319;
 
-        public static final double kPDriveVel = .989;
+        public static final double kPDriveVel = .9;
 
         public static final double kMaxSpeed = 1;
         public static final double kMaxAcceleration = 1;
 
         public static final double kRameseteB = 2;
         public static final double kRameseteZeta = .7;
-        public static final double trackWidthMeters = .7239;
+        public static final double trackWidthMeters = .5969;
 
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(trackWidthMeters);

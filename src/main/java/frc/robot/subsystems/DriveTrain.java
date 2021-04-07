@@ -1,17 +1,12 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
 import com.analog.adis16470.frc.ADIS16470_IMU;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
@@ -32,12 +27,13 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive myRobot;
 
-  private final ADIS16470_IMU gyro;
+  private final Gyro gyro;
+
 
   private final DifferentialDriveKinematics kinematics;
   private final DifferentialDriveOdometry odometry;
 
-  private final double unitsPerRev = 8192;
+  private final double unitsPerRev = 4062;
 
   Pose2d pose;
 
@@ -49,7 +45,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    gyro = new ADIS16470_IMU();
+    gyro = new ADXRS450_Gyro();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
@@ -88,7 +84,7 @@ public class DriveTrain extends SubsystemBase {
 
     m_leftBack.set(ControlMode.Follower, m_leftFront.getDeviceID());
     m_rightBack.set(ControlMode.Follower, m_rightFront.getDeviceID());
-        
+
     myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
     myRobot.setDeadband(0);
     myRobot.setSafetyEnabled(false);
@@ -118,7 +114,7 @@ public class DriveTrain extends SubsystemBase {
     double leftDist = getLeftDistance();
     double rightDist = getRightDistance();
 
-    pose = odometry.update(
+    odometry.update(
             Rotation2d.fromDegrees(heading),
             leftDist,
             rightDist
@@ -129,7 +125,9 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Right Pos", getRightDistance());
     SmartDashboard.putNumber("Left Speeds", getSpeeds().leftMetersPerSecond);
     SmartDashboard.putNumber("Right Speeds", getSpeeds().rightMetersPerSecond);
-    //SmartDashboard.putNumber("Gyro", gyro.getAngle());
+    SmartDashboard.putNumber("Heading", odometry.getPoseMeters().getRotation().getDegrees());
+    SmartDashboard.putNumber("X", odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Y", odometry.getPoseMeters().getY());
 
   }
 
@@ -140,20 +138,15 @@ public class DriveTrain extends SubsystemBase {
 
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
-
-    return new DifferentialDriveWheelSpeeds(
-            getLeftRPM() * (((2 * Math.PI) * Units.inchesToMeters(6.0)) / 60),
-            getRightRPM() * (((2* Math.PI) * Units.inchesToMeters(6.0)) / 60)
-    );
-    /*
     return new DifferentialDriveWheelSpeeds(
             (getLeftRPM() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60),
             (getRightRPM() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60)
-    );*/
+    );
   }
 
   public synchronized void resetOdometry(Pose2d pose) {
     nullEncoders();
+    zeroHeading();
     odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
   }
 
@@ -192,9 +185,9 @@ public class DriveTrain extends SubsystemBase {
   //Allows manual control of the robot
 
   /**
-  *@param leftVal takes the value of the Y axis on the left joystick
-  *@param rightVal takes the value of the Y axis on the left Joystick
-  */
+   *@param leftVal takes the value of the Y axis on the left joystick
+   *@param rightVal takes the value of the Y axis on the left Joystick
+   */
   public synchronized void manualDrive(double leftVal, double rightVal) {
     m_leftFront.set(ControlMode.PercentOutput, leftVal);
     m_rightFront.set(ControlMode.PercentOutput, rightVal);
@@ -209,7 +202,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public synchronized void tankDriveVolts(double leftVolts, double rightVolts) {
-    m_leftFront.setVoltage(leftVolts);
+    m_leftFront.setVoltage(-leftVolts);
     m_rightFront.setVoltage(-rightVolts);
     myRobot.feed();
   }
