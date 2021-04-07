@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 //Subsystems
+import frc.robot.commands.*;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Limelight;
@@ -36,12 +37,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.WheelOfPain;
 import frc.robot.subsystems.Intake;
 //Commands
-import frc.robot.commands.TankDrive;
-import frc.robot.commands.SetVision;
-import frc.robot.commands.LockTarget;
-import frc.robot.commands.RunCompressor;
-import frc.robot.commands.IntakeManipulator;
-import frc.robot.commands.ShootBall;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -89,7 +84,8 @@ public class RobotContainer {
     JoystickButton intakeButton = new JoystickButton(stickL, 4);
     JoystickButton shooterButton = new JoystickButton(stickL, 3);
 
-    targetAcquired.whileHeld(new LockTarget(drive, vision));
+    //targetAcquired.whileHeld(new LockTarget(drive, vision));
+    targetAcquired.whileHeld(new DriveForwardCommand(drive));
     intakeButton.toggleWhenPressed(new IntakeManipulator(intake, hopper));
     shooterButton.whileHeld(new ShootBall(shooter, hopper));
   }
@@ -112,7 +108,7 @@ public class RobotContainer {
                             Constants.AutoConstants.kaVoltSecondsSquaredPerMeter
                     ),
                     Constants.AutoConstants.kDriveKinematics,
-                    10
+                    5
             );
 
     TrajectoryConfig config =
@@ -122,18 +118,20 @@ public class RobotContainer {
             ).setKinematics(Constants.AutoConstants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
 
-
+    /*
     String searchAJson = "paths/SearchA.wpilib.json";
 
     Trajectory searchATrajectory = new Trajectory();
 
+     */
 
-    try {
+
+    /*try {
       Path galacticSearchAPath = Filesystem.getDeployDirectory().toPath().resolve(searchAJson);
       searchATrajectory = TrajectoryUtil.fromPathweaverJson(galacticSearchAPath);
     } catch (IOException e) {
       DriverStation.reportError("Unable to open trajectory: " + searchAJson, e.getStackTrace());
-    }
+    }*/
 
     /*
 
@@ -153,26 +151,40 @@ public class RobotContainer {
             drive::tankDriveVolts,
             drive
     );*/
-    /*
+
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(
-            new Translation2d(1, 0)
-        ),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(2, 0, new Rotation2d(0)),
-        // Pass config
-        config
+            new Pose2d(0,0, new Rotation2d(0)),
+            List.of(
+                    new Translation2d(2,-1)
+            ),
+            new Pose2d(4, 0, new Rotation2d(0)),
+            config
+    );
+
+    drive.resetOdometry(exampleTrajectory.getInitialPose());
+    /*
+
+    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(
+                    new Translation2d(2, 2),
+                    new Translation2d(4, -4)
+            ),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(10, 0, new Rotation2d(0)),
+            // Pass config
+            config
     );
 
      */
 
-    drive.resetOdometry(searchATrajectory.getInitialPose());
+
+
 
     RamseteCommand exampleCommand = new RamseteCommand(
-            searchATrajectory,
+            exampleTrajectory,
             drive::getPose,
             new RamseteController(Constants.AutoConstants.kRameseteB, Constants.AutoConstants.kRameseteZeta),
             new SimpleMotorFeedforward(

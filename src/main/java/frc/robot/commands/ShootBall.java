@@ -16,7 +16,7 @@ public class ShootBall extends CommandBase {
   private Shooter shooter;
   private final Hopper hopper;
 
-  private final int setpoint = 4500;
+  private final int setpoint = 3000;
   private final int acceptance = 650;
 
   public ShootBall(Shooter subsystem1, Hopper subsystem2) {
@@ -36,9 +36,10 @@ public class ShootBall extends CommandBase {
   @Override
   public void execute() {
     //shooter.activateClosedLoopControl();
-    shooter.setVelocity(setpoint);
+    shooter.setSpeed(.65);
 
     double error = (shooter.getRpm()+setpoint);
+    SmartDashboard.putNumber("Error", error);
 
     System.out.println(error);
     if(error < acceptance) {

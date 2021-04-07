@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getRpm() {
-    return shooterEnc.getVelocity();
+    return -shooterEnc.getVelocity();
   }
 
   public double getPosition() {
@@ -61,14 +61,14 @@ public class Shooter extends SubsystemBase {
 
   public synchronized void setVelocity(double velocity) {
     double shooterVal = 0;
-    if(shooterEnc.getVelocity() < velocity) {
-      double diff = shooterEnc.getVelocity() - velocity;
+    if(getRpm() < velocity) {
+      double diff = getRpm() - velocity;
 
       shooterVal = diff * Constants.shooterkP;
       if(shooterVal > .7) {
         shooterVal = .7;
       }
-    } else if(shooterEnc.getVelocity() > velocity) {
+    } else if(getRpm() > velocity) {
       double diff = velocity - shooterEnc.getVelocity();
 
       shooterVal = diff * Constants.shooterkP;
@@ -78,9 +78,7 @@ public class Shooter extends SubsystemBase {
       }
     }
 
-    SmartDashboard.putNumber("Shooter Val", shooterVal);
 
-    System.out.println(shooterVal);
 
     shooterMotor1.set(shooterVal);
   }

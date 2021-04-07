@@ -27,13 +27,15 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive myRobot;
 
-  private final Gyro gyro;
+  private final ADIS16470_IMU gyro;
 
 
   private final DifferentialDriveKinematics kinematics;
   private final DifferentialDriveOdometry odometry;
 
-  private final double unitsPerRev = 4062;
+  private final double unitsPerRev = 2048;
+
+  private final double encoderConstant = (1 / 8.45) * (1 / unitsPerRev);
 
   Pose2d pose;
 
@@ -45,7 +47,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    gyro = new ADXRS450_Gyro();
+    gyro = new ADIS16470_IMU();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
@@ -95,7 +97,7 @@ public class DriveTrain extends SubsystemBase {
 
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
-    kinematics = new DifferentialDriveKinematics(.7239);
+    kinematics = new DifferentialDriveKinematics(.5969);
 
 
 
@@ -151,11 +153,13 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public double getLeftDistance() {
-    return -m_leftFront.getSelectedSensorPosition(0) / unitsPerRev;
+    return -m_leftFront.getSelectedSensorPosition(0) * (((Math.PI * Units.inchesToMeters(6)) / 2048) / 10.71);
+    //return -m_leftFront.getSelectedSensorPosition(0) * encoderConstant;
   }
 
   public double getRightDistance() {
-    return -m_rightFront.getSelectedSensorPosition(0) / unitsPerRev;
+    return -m_rightFront.getSelectedSensorPosition(0) * (((Math.PI * Units.inchesToMeters(6)) / 2048) / 10.71);
+    //return -m_rightFront.getSelectedSensorPosition(0) * encoderConstant;
   }
 
   public double getDist() {
@@ -194,7 +198,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   /**
-   * @param xVal takes through an xspeed 
+   * @param xVal takes through an xspeed
    * @param yVal takes through a yspeed
    */
   public synchronized void arcadeDrive(double xVal, double yVal) {
