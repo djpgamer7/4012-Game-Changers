@@ -37,9 +37,9 @@ public class DriveTrain extends SubsystemBase {
   private final DifferentialDriveKinematics kinematics;
   private final DifferentialDriveOdometry odometry;
 
-  private final double k_encoderConstant = (1 / 8192);
-
   private final double unitsPerRev = 8192;
+
+  Pose2d pose;
 
 
   public DriveTrain() {
@@ -68,9 +68,6 @@ public class DriveTrain extends SubsystemBase {
 
     configs.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
 
-    m_leftBack.set(ControlMode.Follower, m_leftFront.getDeviceID());
-    m_rightBack.set(ControlMode.Follower, m_rightFront.getDeviceID());
-
     m_leftFront.configAllSettings(configs);
     m_rightFront.configAllSettings(configs);
 
@@ -88,19 +85,24 @@ public class DriveTrain extends SubsystemBase {
     m_leftBack.setNeutralMode(NeutralMode.Brake);
     m_rightFront.setNeutralMode(NeutralMode.Brake);
     m_rightBack.setNeutralMode(NeutralMode.Brake);
-    nullEncoders();
+
+    m_leftBack.set(ControlMode.Follower, m_leftFront.getDeviceID());
+    m_rightBack.set(ControlMode.Follower, m_rightFront.getDeviceID());
         
     myRobot = new DifferentialDrive(m_leftFront, m_rightFront);
-
     myRobot.setDeadband(0);
+    myRobot.setSafetyEnabled(false);
 
-    kinematics = new DifferentialDriveKinematics(.7239);
+    nullEncoders();
+    zeroHeading();
+
 
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
-    gyro.reset();
+    kinematics = new DifferentialDriveKinematics(.7239);
 
-    myRobot.setSafetyEnabled(false);
+
+
   }
 
   @Override
@@ -111,16 +113,26 @@ public class DriveTrain extends SubsystemBase {
       m_rightFront.getSensorCollection().getIntegratedSensorPosition()
     );
     */
+    //odometry.update(Rotation2d.fromDegrees(getHeading()), this.getLeftDistance(), this.getRightDistance());
+    double heading = getHeading();
+    double leftDist = getLeftDistance();
+    double rightDist = getRightDistance();
 
-    odometry.update(Rotation2d.fromDegrees(getHeading()), this.getLeftDistance(), this.getRightDistance());
+    pose = odometry.update(
+            Rotation2d.fromDegrees(heading),
+            leftDist,
+            rightDist
+    );
+
 
     SmartDashboard.putNumber("Left Pos", getLeftDistance());
     SmartDashboard.putNumber("Right Pos", getRightDistance());
     SmartDashboard.putNumber("Left Speeds", getSpeeds().leftMetersPerSecond);
     SmartDashboard.putNumber("Right Speeds", getSpeeds().rightMetersPerSecond);
-    SmartDashboard.putNumber("Gyro", -gyro.getAngle());
+    //SmartDashboard.putNumber("Gyro", gyro.getAngle());
 
   }
+
 
   public Pose2d getPose() {
     return odometry.getPoseMeters();
@@ -128,13 +140,19 @@ public class DriveTrain extends SubsystemBase {
 
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
+
+    return new DifferentialDriveWheelSpeeds(
+            getLeftRPM() * (((2 * Math.PI) * Units.inchesToMeters(6.0)) / 60),
+            getRightRPM() * (((2* Math.PI) * Units.inchesToMeters(6.0)) / 60)
+    );
+    /*
     return new DifferentialDriveWheelSpeeds(
             (getLeftRPM() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60),
             (getRightRPM() / 7.29 * 2 * Math.PI * Units.inchesToMeters(6.0) / 60)
-    );
+    );*/
   }
 
-  public void resetOdometry(Pose2d pose) {
+  public synchronized void resetOdometry(Pose2d pose) {
     nullEncoders();
     odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
   }
@@ -145,6 +163,10 @@ public class DriveTrain extends SubsystemBase {
 
   public double getRightDistance() {
     return -m_rightFront.getSelectedSensorPosition(0) / unitsPerRev;
+  }
+
+  public double getDist() {
+    return (getLeftDistance() + getRightDistance()) / 2;
   }
 
   //Units: RPM
@@ -158,7 +180,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
 
-  public void nullEncoders() {
+  public synchronized void nullEncoders() {
     m_rightFront.getSensorCollection().setIntegratedSensorPosition(0, 10);
     m_leftFront.getSensorCollection().setIntegratedSensorPosition(0, 10);
   }
@@ -186,26 +208,17 @@ public class DriveTrain extends SubsystemBase {
     myRobot.arcadeDrive(xVal, yVal);
   }
 
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
+  public synchronized void tankDriveVolts(double leftVolts, double rightVolts) {
     m_leftFront.setVoltage(leftVolts);
     m_rightFront.setVoltage(-rightVolts);
     myRobot.feed();
-  }
-
-
-  public void setMaxOutput(double maxOutput) {
-    myRobot.setMaxOutput(maxOutput);
   }
 
   public double getHeading() {
     return Math.IEEEremainder(gyro.getAngle(), 360) * (true ? -1.0 : 1.0);
   }
 
-  public void zeroHeading() {
+  public synchronized void zeroHeading() {
     gyro.reset();
-  }
-
-  public double getTurnRate() {
-    return -gyro.getRate();
   }
 }
