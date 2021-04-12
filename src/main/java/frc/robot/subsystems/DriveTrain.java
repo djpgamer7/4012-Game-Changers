@@ -27,7 +27,7 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive myRobot;
 
-  private final ADIS16470_IMU gyro;
+  private final ADXRS450_Gyro gyro;
 
 
   private final DifferentialDriveKinematics kinematics;
@@ -47,7 +47,7 @@ public class DriveTrain extends SubsystemBase {
     m_rightFront = new WPI_TalonFX(Constants.RIGHT_FRONT);
     m_rightBack = new WPI_TalonFX(Constants.RIGHT_BACK);
 
-    gyro = new ADIS16470_IMU();
+    gyro = new ADXRS450_Gyro();
 
     //Clears the motor controllers faults
     m_leftFront.clearStickyFaults();
