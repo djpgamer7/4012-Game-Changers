@@ -34,6 +34,8 @@ public final class Constants {
 
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(trackWidthMeters);
+        
+        public static final int maxVoltage = 5;
     }
     //-----------------------------Subsystems-----------------------------//
     //DriveBase
