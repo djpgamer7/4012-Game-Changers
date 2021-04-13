@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConst
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants;
 
 //Subsystems
 import frc.robot.commands.*;
@@ -108,7 +109,7 @@ public class RobotContainer {
                             Constants.AutoConstants.kaVoltSecondsSquaredPerMeter
                     ),
                     Constants.AutoConstants.kDriveKinematics,
-                    5
+                    Contants.AutoConstants.maxVoltage
             );
 
     TrajectoryConfig config =
@@ -132,34 +133,6 @@ public class RobotContainer {
     } catch (IOException e) {
       DriverStation.reportError("Unable to open trajectory: " + searchAJson, e.getStackTrace());
     }*/
-
-    /*
-
-    RamseteCommand initialCommand = new RamseteCommand(
-            exampleTrajectory,
-            drive::getPose,
-            new RamseteController(Constants.AutoConstants.kRameseteB, Constants.AutoConstants.kRameseteZeta),
-            new SimpleMotorFeedforward(
-                    Constants.AutoConstants.ksVolts,
-                    Constants.AutoConstants.kvVoltSecondsPerMeter,
-                    Constants.AutoConstants.kaVoltSecondsSquaredPerMeter
-            ),
-            Constants.AutoConstants.kDriveKinematics,
-            drive::getSpeeds,
-            new PIDController(Constants.AutoConstants.kPDriveVel, 0, 0),
-            new PIDController(Constants.AutoConstants.kPDriveVel, 0, 0),
-            drive::tankDriveVolts,
-            drive
-    );*/
-
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-            new Pose2d(0,0, new Rotation2d(0)),
-            List.of(
-                    new Translation2d(2,-1)
-            ),
-            new Pose2d(4, 0, new Rotation2d(0)),
-            config
-    );
 
     drive.resetOdometry(exampleTrajectory.getInitialPose());
     /*
